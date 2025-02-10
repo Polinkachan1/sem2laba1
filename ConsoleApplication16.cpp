@@ -6,7 +6,7 @@ using namespace std;
 
 struct Student {
     int id;
-    char name[50];
+    string name;
     char gender;
     int group;
     int num_in_group;
@@ -28,9 +28,10 @@ void show_data()
     database.close();
 }
 void create_new_student(struct Student students[], int& size) {
+    students[size].id = size + 1;
     cout << "Добавим нового студента " << endl;
-    cin.ignore();
-    cin.getline(students[size].name, 50, '\n');
+    cout << "Введите имя" << endl;
+    cin >> students[size].name;
     cout << "name passed" << endl;
     cout << "Введите пол студента (Ж/М): "<< endl;
     cin >> students[size].gender;
@@ -47,7 +48,7 @@ void create_new_student(struct Student students[], int& size) {
     ofstream database("TextFile1.txt", ios::app);  // Открываем файл для добавления
     if (database.is_open()) {
         database << students[size].id << "\n"
-            << students[size].name << "\n"
+            << students[size].name<< "\n"
             << students[size].gender << "\n"
             << students[size].group << "\n"
             << students[size].num_in_group << "\n";
@@ -65,11 +66,30 @@ void create_new_student(struct Student students[], int& size) {
     int i = size;
     size++;
 }
+void info_from_file(Student students[], int size) {
+    ifstream database("TextFile1.txt");
+    if (!database.is_open()) {
+        cout << "Ошибка открытия файла" << endl;
+        return; // Выход из функции, если файл не открыт
+    }
 
-void print_all(Student students[], int count) {
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < size; i++) {
+        if (!(database >> students[i].id)) break;
+        if (!(database >> students[i].name)) break;
+        if (!(database >> students[i].gender)) break;
+        if (!(database >> students[i].group)) break;
+        if (!(database >> students[i].num_in_group)) break;
+        for (int j = 0; j < 8; j++) {
+            if (!(database >> students[i].grades[j])) break;
+        }
+    }
+    database.close();
+}
+
+void print_all(Student students[], int size) {
+    for (int i = 0; i < size; i++) {
         cout << "ID: " << students[i].id << endl;
-        cout << "Имя: " << students[i].name << endl;
+        cout << "ФИО: " << students[i].name<< endl;
         cout << "Пол: " << students[i].gender << endl;
         cout << "Группа: " << students[i].group << endl;
         cout << "Номер в группе: " << students[i].num_in_group << endl;
@@ -81,25 +101,7 @@ void print_all(Student students[], int count) {
     }
 }
 
-void info_from_file(Student students[], int size) {
-    ifstream database("TextFile1.txt");
-    if (!database.is_open()) {
-        cout << "File opening error" << endl;
-    }
-    else {
-        for (int i = 0; i < size; i++) {
-            database >> students[i].id;
-            database >> students[i].name;
-            database >> students[i].gender;
-            database >> students[i].group;
-            database >> students[i].num_in_group;
-            for (int j = 0; j < 8; j++) {
-                database >> students[i].grades[j];
-            }
-        }
-    }
-    database.close();
-}
+
 void print_students_in_group(Student students[], int size) {
     int group_num;
     cout << "Введите номер группы" << endl;
@@ -108,7 +110,7 @@ void print_students_in_group(Student students[], int size) {
     for (int i = 0; i < size; i++) {
         if (students[i].group == group_num) {
             cout << "ID: " << students[i].id << endl;
-            cout << "Имя: " << students[i].name << endl;
+            cout << "ФИО: " << students[i].name << endl;
             cout << "Пол: " << students[i].gender << endl;
             cout << "Группа: " << students[i].group << endl;
             cout << "Номер в группе: " << students[i].num_in_group << endl;
@@ -128,7 +130,7 @@ void students_with_certain_num_in_group(Student students[], int size) {
     for (int i = 0; i < size; i++) {
         if (students[i].num_in_group == num_in_group) {
             cout << "ID: " << students[i].id << endl;
-            cout << "Имя: " << students[i].name << endl;
+            cout << "ФИО: " << students[i].name << endl;
             cout << "Пол: " << students[i].gender << endl;
             cout << "Группа: " << students[i].group << endl;
             cout << "Номер в группе: " << students[i].num_in_group << endl;
@@ -165,7 +167,7 @@ void students_without_scholarship(Student students[], int size) {
         }
         if (counter >= 1) {
             cout << "ID: " << students[i].id << endl;
-            cout << "Имя: " << students[i].name << endl;
+            cout << "ФИО: " << students[i].name << endl;
             cout << "Пол: " << students[i].gender << endl;
             cout << "Группа: " << students[i].group << endl;
             cout << "Номер в группе: " << students[i].num_in_group << endl;
@@ -188,7 +190,7 @@ void students_good_and_excellent(Student students[], int size) {
         }
         if (counter == 8) {
             cout << "ID: " << students[i].id << endl;
-            cout << "Имя: " << students[i].name << endl;
+            cout << "ФИО: " << students[i].name << endl;
             cout << "Пол: " << students[i].gender << endl;
             cout << "Группа: " << students[i].group << endl;
             cout << "Номер в группе: " << students[i].num_in_group << endl;
@@ -211,7 +213,7 @@ void students_excellent(Student students[], int size) {
         }
         if (counter == 8) {
             cout << "ID: " << students[i].id << endl;
-            cout << "Имя: " << students[i].name << endl;
+            cout << "ФИО: " << students[i].name << endl;
             cout << "Пол: " << students[i].gender << endl;
             cout << "Группа: " << students[i].group << endl;
             cout << "Номер в группе: " << students[i].num_in_group << endl;
@@ -235,21 +237,21 @@ void display_menu() {
     cout << "8. Вывод данных о студентах, имеющих номер в списке – k." << endl;
 }
 int num_of_id() {
-    int size = 0, res = 0;
+
     ifstream database("TextFile1.txt");
-    if (!database.is_open()) {
-        cout << "Ошибка при открытии файла" << endl;
-        return -1;
-    }
-    string data;
-    while (getline(database, data)) {
-        if (!data.empty()) {
-            size++;
+    if (database.is_open()) {
+        int temp = 0;
+        string data;
+        while (!database.eof()) {
+            getline(database, data);
+            temp++;
         }
+        database.close();
+        int res = 0;
+        res = temp / 6;
+        return res;
     }
-    database.close();
-    res = size / 6;
-    return res;
+    else return 0;
 }
 int main() {
     setlocale(0, "");
