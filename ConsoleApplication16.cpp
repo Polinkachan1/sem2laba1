@@ -66,11 +66,84 @@ void create_new_student(struct Student students[], int& size) {
     int i = size;
     size++;
 }
+void change_information_about_student(Student& student) {
+    cout << "Выберите элемент для изменения (1 - Имя, 2 - Группа, 3 - Оценки, 4 - Все): ";
+    int choice;
+    cin >> choice;
+    switch (choice) {
+    case 1:
+        cout << "Введите новое имя: ";
+        cin >> student.name;
+        break;
+    case 2:
+        cout << "Введите новую группу: ";
+        cin >> student.group;
+        break;
+    case 3: {
+        cout << "Введите оценки (введите пустую строку для завершения ввода): " << endl;
+        for (int i = 0; i < 8; i++) {
+            cin >> student.grades[i];
+            cout << endl;
+        }
+        break;
+    }
+    case 4:
+        cout << "Введите новое имя: ";
+        cin>> student.name;
+        cout << "Введите новую группу: ";
+        cin >> student.group;
+        cout << "Введите оценки (3 экзамена и 5 диф зачетов): " << endl;
+        for (int i = 0; i < 8; i++) {
+            cin >> student.grades[i];
+            cout << endl;
+        }
+        break;
+    default:
+        cout << "Некорректный выбор." << endl;
+        break;
+    }
+}
+void findAndEditStudentByNumberInGroup(Student students[], int size) {
+    int num_in_group, group;
+    cout << "Введите номер группы" << endl;
+    cin >> group;
+    cout << "Введите номер в группе" << endl;
+    cin >> num_in_group;
+    for (int i = 0; i < size; ++i) {
+        if (students[i].group == group and students[i].num_in_group == num_in_group) {
+            cout << "Найден студент: ";
+            change_information_about_student(students[i]); 
+            cout << "Данные студента обновлены!" << endl;
+            return;
+        }
+    }
+}
+void save_students_to_file(Student students[], int size) {
+    ofstream database("TextFile1.txt", std::ios::trunc);
+    if (!database.is_open()) {
+        cout << "Ошибка при открытии файла для записи." << endl;
+        return;
+    }
+    for (int i = 0; i < size; ++i) {
+        if (!students[i].name.empty()) {
+            database << students[i].id << endl;
+            database << students[i].name << endl;
+            database << students[i].gender << endl;
+            database << students[i].group << endl;
+            database << students[i].num_in_group << endl;
+            for (int j = 0; j < 8; ++j) {
+                database << students[i].grades[j] << endl;
+            }
+        }
+    }
+
+    database.close();
+}
 void info_from_file(Student students[], int size) {
     ifstream database("TextFile1.txt");
     if (!database.is_open()) {
         cout << "Ошибка открытия файла" << endl;
-        return; // Выход из функции, если файл не открыт
+        return;
     }
 
     for (int i = 0; i < size; i++) {
@@ -275,7 +348,10 @@ int main() {
             create_new_student(students, size);
             break;
         case 2:
-            //find_student_info(students, size);
+            findAndEditStudentByNumberInGroup(students, size);
+            save_students_to_file(students, size);
+            cout << " bmkgmngkmgngknmgnk" << endl;
+            info_from_file(students, size);
             break;
         case 3:
             print_all(students, size);
