@@ -36,16 +36,19 @@ void create_new_student(struct Student students[], int& size) {
     cout << "Введите пол студента (Ж/М): "<< endl;
     cin >> students[size].gender;
     cout << "gender passed" << endl;
+    cout << "Введите номер группы: " << endl;
     cin >> students[size].group;
     cout << "group passed" << endl;
+    cout << "Введите номер в группе: " << endl;
     cin >> students[size].num_in_group;
     cout << "num in group passed" << endl;
+    cout << "Введите 8 оценок(после каждой нажмите Enter): " << endl;
     for (int i = 0; i < 8; i++) {
         cin >> students[size].grades[i];
         cout << endl;
     }
     cout << "all done" << endl;
-    ofstream database("TextFile1.txt", ios::app);  // Открываем файл для добавления
+    ofstream database("TextFile1.txt", ios::app); 
     if (database.is_open()) {
         database << students[size].id << "\n"
             << students[size].name<< "\n"
@@ -103,7 +106,7 @@ void change_information_about_student(Student& student) {
         break;
     }
 }
-void findAndEditStudentByNumberInGroup(Student students[], int size) {
+void find_and_edit_student_by_num_in_group(Student students[], int size) {
     int num_in_group, group;
     cout << "Введите номер группы" << endl;
     cin >> group;
@@ -173,7 +176,42 @@ void print_all(Student students[], int size) {
         cout << endl << "-----------------------------" << endl;
     }
 }
+float median_of_grades(Student& student) {
+        float summa = 0;
+        float median = 0;
+        for (int j = 0; j < 8; j++) {
+            summa += student.grades[j];
+        }
+        median = summa / 8;
+        return median;
+}
 
+void top_of_students_by_grades(Student students[], int size) {
+    int num_of_students = 0;
+    cout << "Введите сколько студентов должно быть в топе" << endl;
+    cin >> num_of_students;
+    for (int i = 0; i < size-1; i++) {
+        for (int j =i+1;j<size;j++){
+            if (median_of_grades(students[i]) < median_of_grades(students[j])) {
+                swap(students[i], students[j]);
+            }
+        }
+    }
+    for (int i = 0; i < num_of_students; i++) {
+        cout << "ID: " << students[i].id << endl;
+        cout << "ФИО: " << students[i].name << endl;
+        cout << "Пол: " << students[i].gender << endl;
+        cout << "Группа: " << students[i].group << endl;
+        cout << "Номер в группе: " << students[i].num_in_group << endl;
+        cout << "Оценки: ";
+        for (int j = 0; j < 8; j++) {
+            cout << students[i].grades[j] << " ";
+        }
+        cout << endl;
+        cout << "Средний балл: " << median_of_grades(students[i]);
+        cout << endl << "-----------------------------" << endl;
+    }
+}
 
 void print_students_in_group(Student students[], int size) {
     int group_num;
@@ -199,7 +237,7 @@ void students_with_certain_num_in_group(Student students[], int size) {
     int num_in_group;
     cout << "Введите номер в группе" << endl;
     cin >> num_in_group;
-    cout << "Информация о студентах с этим номером в группе" << num_in_group << ":\n";
+    cout << "Информация о студентах с этим номером в группе " << num_in_group << ":\n";
     for (int i = 0; i < size; i++) {
         if (students[i].num_in_group == num_in_group) {
             cout << "ID: " << students[i].id << endl;
@@ -233,6 +271,7 @@ void students_without_scholarship(Student students[], int size) {
     cout << "Вывод данных о студентах, которые не получают стипендию " << endl;
     int counter = 0;
     for (int i = 0; i < size; i++) {
+        counter = 0;
         for (int j = 0; j < 8; j++) {
             if (students[i].grades[j] == 3) {
                 counter++;
@@ -255,13 +294,19 @@ void students_without_scholarship(Student students[], int size) {
 void students_good_and_excellent(Student students[], int size) {
     cout << "Вывод данных о студентах, учатся только на «хорошо» и «отлично»" << endl;
     int counter = 0;
+    int is_4=0;
     for (int i = 0; i < size; i++) {
+        counter = 0;
+        is_4 = 0;
         for (int j = 0; j < 8; j++) {
             if (students[i].grades[j] == 4 or students[i].grades[j] == 5) {
                 counter++;
             }
+            if (students[i].grades[j] == 4) {
+                is_4 = 1;
+            }
         }
-        if (counter == 8) {
+        if (is_4==1 && counter == 8) {
             cout << "ID: " << students[i].id << endl;
             cout << "ФИО: " << students[i].name << endl;
             cout << "Пол: " << students[i].gender << endl;
@@ -279,6 +324,7 @@ void students_excellent(Student students[], int size) {
     cout << "Вывод данных о студентах, учатся только на «отлично»" << endl;
     int counter = 0;
     for (int i = 0; i < size; i++) {
+        counter = 0;
         for (int j = 0; j < 8; j++) {
             if (students[i].grades[j] == 5) {
                 counter++;
@@ -332,6 +378,7 @@ int main() {
     SetConsoleOutputCP(1251);
     struct Student students[1000];
     int identificator, size = num_of_id();
+    print_all(students, size);
     if (size != 0) {
         info_from_file(students, size);
     }
@@ -348,19 +395,19 @@ int main() {
             create_new_student(students, size);
             break;
         case 2:
-            findAndEditStudentByNumberInGroup(students, size);
+            find_and_edit_student_by_num_in_group(students, size);
             save_students_to_file(students, size);
-            cout << " bmkgmngkmgngknmgnk" << endl;
-            info_from_file(students, size);
             break;
         case 3:
             print_all(students, size);
+            cout << endl;
+            show_data();
             break;
         case 4:
             print_students_in_group(students, size);
             break;
         case 5:
-            students_with_certain_num_in_group(students, size);
+            top_of_students_by_grades(students, size);
             break;
         case 6:
             male_and_female_num(students, size);
