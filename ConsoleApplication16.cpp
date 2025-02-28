@@ -9,6 +9,45 @@ struct full_name {
     string first_name;  
     string middle_name; //отчество
 };
+struct Student_idz {
+    int id;
+    full_name fio;
+    char gender;
+    int group;
+    int num_in_group;
+    bool is_nonresident;
+    int family_income;
+};
+void make_queue_for_dormitory(Student_idz students[]) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = i + 1; j < 5; j++) {
+            if (students[i].is_nonresident < students[j].is_nonresident or (students[i].is_nonresident == students[j].is_nonresident
+                and students[i].family_income > students[j].family_income)) {
+                swap(students[i], students[j]);
+            }
+        }
+    }
+    for (int i = 0; i < 5; i++) {
+        cout << "ID: " << students[i].id << endl;
+        cout << "ФИО: " << students[i].fio.last_name << " " << students[i].fio.first_name << " " << students[i].fio.middle_name << endl;
+        cout << "Пол: " << students[i].gender << endl;
+        cout << "Группа: " << students[i].group << endl;
+        cout << "Номер в группе: " << students[i].num_in_group << endl;
+        cout << (students[i].is_nonresident ? "Иногородний" : "Местный") << endl;
+        cout << "Доход семьи: " << students[i].family_income << endl;
+        cout << "--------------------------------------------------" << endl;
+    }
+}
+void idz() {
+    Student_idz students[5] = {1, {"Аня", "Иванова", "Олеговна"},'Ж',4373,10, true, 25000,
+        2,{"Иван", "Иванов", "Иванович"},'М',4373,12, true, 30000,
+        3, {"Марк", "Цукерберг", "Иванович"},'М',4373,10, true, 300000,
+        4, {"Аня", "Шмидт", "Никитична"},'Ж',4373,1, true, 25000,
+        5, {"Марк", "Панк", "Иванович"},'М',4373,10, false, 300000,
+    };
+    make_queue_for_dormitory(students);
+}
+
 struct Student {
     int id;
     full_name fio;
@@ -385,6 +424,7 @@ void display_menu() {
     cout << "6. Вывод количества студентов мужского и женского пола." << endl;
     cout << "7. Вывод данных о студентах, которые не получают стипендию; учатся только на «хорошо» и «отлично»; учатся только на «отлично»;" << endl;
     cout << "8. Вывод данных о студентах, имеющих номер в списке – k." << endl;
+    cout << "9. ИДЗ"<< endl;
 }
 int num_of_id() {
 
@@ -454,6 +494,9 @@ int main() {
             students_with_certain_num_in_group(students, size);
             break;
         case 9:
+            idz();
+            break;
+        case 10:
             cout << "Выход!" << endl;
             return 0;
 
